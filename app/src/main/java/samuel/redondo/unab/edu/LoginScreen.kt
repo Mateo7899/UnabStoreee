@@ -1,5 +1,6 @@
 package samuel.redondo.unab.edu
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,10 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -24,9 +28,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -34,16 +43,32 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.auth
+import kotlin.math.log
 
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit = {}) {
+
+    val auth = Firebase.auth
+    val activity = LocalView.current.context as Activity
+
+    //ESTADOS
+    var inputEmail by remember { mutableStateOf("") }
+    var inputPassword by remember { mutableStateOf("") }
+    var loginError by remember { mutableStateOf("") }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .imePadding()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -69,8 +94,8 @@ fun LoginScreen() {
 
             // Campo de Correo Electrónico
             OutlinedTextField(
-                value = "", // Valor vacío (sin estado)
-                onValueChange = {},
+                value = inputEmail, // Valor vacío (sin estado)
+                onValueChange = { inputEmail = it },
                 label = { Text("Correo Electrónico") },
                 leadingIcon = {
                     Icon(
@@ -89,8 +114,8 @@ fun LoginScreen() {
 
             // Campo de Contraseña
             OutlinedTextField(
-                value = "", // Valor vacío (sin estado)
-                onValueChange = {},
+                value = inputPassword, // Valor vacío (sin estado)
+                onValueChange = { inputPassword = it },
                 label = { Text("Contraseña") },
                 leadingIcon = {
                     Icon(
@@ -109,9 +134,32 @@ fun LoginScreen() {
                 )
             )
             Spacer(modifier = Modifier.height(24.dp))
+            if (loginError.isNotEmpty()) {
+                Text(
+                    loginError,
+                    color = Color.Red,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                )
+            }
+
             // Botón de Iniciar Sesión
             Button(
-                onClick = { },
+                onClick = {
+                    auth.signInWithEmailAndPassword(inputEmail, inputPassword)
+                        .addOnCompleteListener(activity) { task ->
+                            if (task.isSuccessful) {
+                                onSuccessfullLogin()
+                            } else {
+                                loginError = when(task.exception){
+                                    is FirebaseAuthInvalidCredentialsException -> "Correo o contraseña incorrecta"
+                                    is FirebaseAuthInvalidUserException -> "No existe una cuenta con este correo"
+                                    else -> "Error al iniciar sesion. Intenta de nuevo"
+                                }
+                            }
+                        }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
@@ -126,7 +174,7 @@ fun LoginScreen() {
             }
             Spacer(modifier = Modifier.height(16.dp))
             // Enlace para Registrarse
-            TextButton(onClick = {}) {
+            TextButton(onClick = onClickRegister) {
                 Text(
                     text = "¿No tienes una cuenta? Regístrate",
                     color = Color(0xFFFF9900)

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "685923019137",
+    "project_id": "loginfirebase-b6e3c",
+    "storage_bucket": "loginfirebase-b6e3c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685923019137:android:6cf3028f863d427cea6080",
+        "android_client_info": {
+          "package_name": "samuel.redondo.unab.edu"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQUF8jxBSJjRoYuCvtnLM_xFZNq9cakHw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,25 +21,32 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val navController = rememberNavController()
-            val startDestination = "login"
-            NavHost(
-                navController = navController,
-                startDestination = startDestination,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                composable(route = "login") {
-                    LoginScreen()
-                }
-                composable(route = "register") {
-                    RegisterScreen()
-                }
-                composable(route = "home") {
-                    HomeScreen()
-                }
+                val navController = rememberNavController()
+                val startDestination = "login"
+                NavHost(
+                    navController = navController,
+                    startDestination = startDestination,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    composable(route = "login") {
+                        LoginScreen(onClickRegister = {
+                            navController.navigate("register")
+                        }, onSuccessfullLogin = {
+                            navController.navigate("home"){
+                                popUpTo("login"){inclusive = true}
+                            }
+                        })
+                    }
+                    composable(route = "register") {
+                        RegisterScreen(onClickBack = {
+                            navController.popBackStack()
+                        })
+                    }
+                    composable(route = "home") {
+                        HomeScreen()
+                    }
 
+                }
             }
         }
     }
-}
-
