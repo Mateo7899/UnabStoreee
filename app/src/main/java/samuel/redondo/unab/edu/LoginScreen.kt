@@ -61,6 +61,8 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
     var inputEmail by remember { mutableStateOf("") }
     var inputPassword by remember { mutableStateOf("") }
     var loginError by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf("") }
+    var passwordError by remember { mutableStateOf("") }
 
     Scaffold { paddingValues ->
         Column(
@@ -107,6 +109,14 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
+                supportingText = {
+                    if (emailError.isNotEmpty()){
+                        Text(
+                            text = emailError,
+                            color = Color.Red
+                        )
+                    }
+                }
 
                 )
 
@@ -147,18 +157,28 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
             // Botón de Iniciar Sesión
             Button(
                 onClick = {
-                    auth.signInWithEmailAndPassword(inputEmail, inputPassword)
-                        .addOnCompleteListener(activity) { task ->
-                            if (task.isSuccessful) {
-                                onSuccessfullLogin()
-                            } else {
-                                loginError = when(task.exception){
-                                    is FirebaseAuthInvalidCredentialsException -> "Correo o contraseña incorrecta"
-                                    is FirebaseAuthInvalidUserException -> "No existe una cuenta con este correo"
-                                    else -> "Error al iniciar sesion. Intenta de nuevo"
+                    val isValidEmail: Boolean = validateEmail(inputEmail).first
+                    val isValidPassword = validatePassword(inputPassword).first
+
+                    emailError = validateEmail(inputEmail).second
+                    passwordError = validatePassword(inputPassword).second
+
+                    if (isValidEmail && isValidPassword) {
+                        auth.signInWithEmailAndPassword(inputEmail, inputPassword)
+                            .addOnCompleteListener(activity) { task ->
+                                if (task.isSuccessful) {
+                                    onSuccessfullLogin()
+                                } else {
+                                    loginError = when (task.exception) {
+                                        is FirebaseAuthInvalidCredentialsException -> "Correo o contraseña incorrecta"
+                                        is FirebaseAuthInvalidUserException -> "No existe una cuenta con este correo"
+                                        else -> "Error al iniciar sesion. Intenta de nuevo"
+                                    }
                                 }
                             }
-                        }
+                    }
+
+
                 },
                 modifier = Modifier
                     .fillMaxWidth()
