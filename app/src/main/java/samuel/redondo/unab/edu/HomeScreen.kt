@@ -1,14 +1,11 @@
 package samuel.redondo.unab.edu
 
+import android.R.attr.contentDescription
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +30,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +68,8 @@ fun HomeScreen(onClickLogout: () -> Unit = {}) {
                         auth.signOut()
                         onClickLogout()
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ExitToApp, "Cerrar sesión")
+                        Icon(imageVector = Icons.Filled.ExitToApp,
+                        contentDescription = "Cerrar sesión")
                     }
                 },
                 colors = TopAppBarDefaults.mediumTopAppBarColors(

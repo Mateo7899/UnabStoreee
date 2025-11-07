@@ -1,7 +1,5 @@
 package samuel.redondo.unab.edu
 
-import com.google.firebase.FirebaseApp
-import com.google.firebase.ktx.Firebase
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -11,9 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import samuel.redondo.unab.edu.ui.theme.UnabStoreeeTheme
-
+import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,19 +24,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UnabStoreeeTheme {
+                // ✅ Se crea el NavController dentro del contexto composable
                 val navController = rememberNavController()
 
-                // ✅ Detecta si el usuario está logueado
-                val currentUser = Firebase.auth.currentUser
+                // ✅ Autenticación Firebase
+                val auth = Firebase.auth
+                val currentUser = auth.currentUser
+
+                // ✅ Definir pantalla inicial según sesión
                 val startDestination = if (currentUser != null) "home" else "login"
 
-                // ✅ Configura las rutas principales
+                // ✅ Estructura de navegación
                 NavHost(
                     navController = navController,
                     startDestination = startDestination,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    composable(route = "login") {
+                    // 🔹 Pantalla de Login
+                    composable("login") {
                         LoginScreen(
                             onClickRegister = {
                                 navController.navigate("register")
@@ -50,9 +54,12 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable(route = "register") {
+                    // 🔹 Pantalla de Registro
+                    composable("register") {
                         RegisterScreen(
-                            onClickBack = { navController.popBackStack() },
+                            onClickBack = {
+                                navController.popBackStack()
+                            },
                             onSuccessfulRegister = {
                                 navController.navigate("home") {
                                     popUpTo(0)
@@ -61,9 +68,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable(route = "home") {
+                    // 🔹 Pantalla Principal (Home)
+                    composable("home") {
                         HomeScreen(
                             onClickLogout = {
+                                // Cerrar sesión y volver a login
                                 Firebase.auth.signOut()
                                 navController.navigate("login") {
                                     popUpTo(0)
@@ -76,4 +85,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
