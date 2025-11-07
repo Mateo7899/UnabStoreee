@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -110,7 +112,7 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 supportingText = {
-                    if (emailError.isNotEmpty()){
+                    if (emailError.isNotEmpty()) {
                         Text(
                             text = emailError,
                             color = Color.Red
@@ -118,7 +120,7 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
                     }
                 }
 
-                )
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -134,15 +136,20 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
                         tint = Color(0xFF666666) // Color gris
                     )
                 },
+
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF6200EE), // Color morado
-                    unfocusedBorderColor = Color(0xFFCCCCCC) // Color gris claro
+                supportingText = {
+                    if (passwordError.isNotEmpty()) {
+                        Text(
+                            text = passwordError,
+                            color = Color.Red
+                        )
+                    }
+                },
+
                 )
-            )
             Spacer(modifier = Modifier.height(24.dp))
             if (loginError.isNotEmpty()) {
                 Text(
@@ -150,8 +157,10 @@ fun LoginScreen(onClickRegister: () -> Unit = {}, onSuccessfullLogin: () -> Unit
                     color = Color.Red,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = 8.dp),
+
                 )
+
             }
 
             // Botón de Iniciar Sesión

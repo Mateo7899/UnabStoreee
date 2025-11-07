@@ -20,3 +20,11 @@ fun validatePassword(password:String): Pair<Boolean, String>{
             else -> Pair(true,"")
     }
 }
+
+fun validateName (name : String): Pair<Boolean, String>{
+    return when{
+        name.isEmpty() -> Pair(false, "El nombre es requerido")
+        name.length < 3 -> Pair(false, "El nombre debe tener al menso 3 caracteres.")
+        else -> Pair(true,"")
+    }
+}
